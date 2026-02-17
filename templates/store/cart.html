@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<section class="section-content padding-y bg">
+<div class="container">
+
+{% if not cart_items %}
+<h3 class="text-center">Your cart is empty</h3>
+<br>
+<div class="text-center">
+    <a href="{% url 'store' %}" class="btn btn-primary">
+        Continue Shopping
+    </a>
+</div>
+
+{% else %}
+
+<div class="row">
+
+<!-- ================= CART ITEMS ================= -->
+<aside class="col-lg-9">
+
+<div class="card">
+	<table class="table table-borderless table-shopping-cart">
+
+		<thead class="text-muted">
+			<tr class="small text-uppercase">
+				<th>Product</th>
+				<th width="150">Quantity</th>
+				<th width="120">Price</th>
+				<th width="120"></th>
+			</tr>
+		</thead>
+
+	<tbody>
+
+	{% for item in cart_items %}
+	<tr>
+
+	<!-- PRODUCT -->
+		<td>
+			<figure class="itemside align-items-center">
+
+			<div class="aside">
+				<img src="{{ item.product.image.url }}" class="img-sm">
+			</div>
+
+			<figcaption class="info">
+
+				<a href="{{ item.product.get_url }}" class="title text-dark">
+					{{ item.product.product_name }}
+				</a>
+
+				{% if item.variations.all %}
+				<ul class="list-unstyled small text-muted mb-0">
+
+				{% for variation in item.variations.all %}
+				<li>
+					<strong>{{ variation.variation_category|capfirst }}:</strong>
+					{{ variation.variation_value }}
+				</li>
+				{% endfor %}
+
+				</ul>
+				{% endif %}
+
+			</figcaption>
+
+			</figure>
+		</td>
+
+
+		<!-- QUANTITY -->
+		<td>
+			<div class="input-group input-spinner">
+
+			<!-- MINUS -->
+			<div class="input-group-prepend">
+				<a href="{% url 'remove_cart' item.product.id item.id %}" class="btn btn-light">
+					<i class="fa fa-minus"></i>
+				</a>
+			</div>
+
+			<input type="text"
+       		class="form-control text-center"
+       		value="{{ item.quantity }}"
+       		readonly>
+
+<!-- PLUS -->
+<div class="input-group-append">
+<a href="{% url 'increase_cart' item.product.id item.id %}" class="btn btn-light">
+<i class="fa fa-plus"></i>
+</a>
+</div>
+
+</div>
+</td>
+
+
+<!-- PRICE -->
+<td>
+<div class="price-wrap">
+<var class="price">₹ {{ item.sub_total }}</var>
+<small class="text-muted">
+₹ {{ item.product.price }} each
+</small>
+</div>
+</td>
+
+
+<!-- REMOVE -->
+<td class="text-right">
+<a href="{% url 'remove_cart_item' item.product.id item.id %}"
+   class="btn btn-danger">
+Remove
+</a>
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+
+</aside>
+
+
+<!-- ================= SUMMARY ================= -->
+<aside class="col-lg-3">
+
+<div class="card">
+<div class="card-body">
+
+<dl class="dlist-align">
+<dt>Total price:</dt>
+<dd class="text-right">₹ {{ total }}</dd>
+</dl>
+
+<dl class="dlist-align">
+<dt>Tax (2%):</dt>
+<dd class="text-right">₹ {{ tax }}</dd>
+</dl>
+
+<dl class="dlist-align">
+<dt>Grand Total:</dt>
+<dd class="text-right text-dark">
+<strong>₹ {{ grand_total }}</strong>
+</dd>
+</dl>
+
+<hr>
+
+<p class="text-center mb-3">
+<img src="{% static 'images/misc/payments.png' %}" height="26">
+</p>
+
+<a href="{% url 'checkout' %}" class="btn btn-primary btn-block">
+Checkout
+</a>
+
+<a href="{% url 'store' %}" class="btn btn-light btn-block">
+Continue Shopping
+</a>
+
+</div>
+</div>
+
+</aside>
+
+</div>
+
+{% endif %}
+
+</div>
+</section>
+
+{% endblock %}
